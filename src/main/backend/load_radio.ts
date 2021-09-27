@@ -3,14 +3,20 @@ import { ipcMain, dialog } from "electron";
 import axios from "axios";
 
 async function downloadListenPlsAsync(url: string) {
-    return (await axios.get(url)).data;
+    try {
+        const result = (await axios.get(url)).data;
+        return result;
+    } catch (e) {
+        throw e;
+        console.error(e);
+    }
 }
 
 async function handleListenPlsFileAsync(data: string): Promise<string> {
     if (!data) {
         throw new Error('No data!')
     }
-    const matched = data.match(/File1(.*)/);
+    const matched = data.match(/File1=(.*)/);
     const urlString = matched ? matched[1] : undefined;
     if (urlString) {
         try {
@@ -20,7 +26,7 @@ async function handleListenPlsFileAsync(data: string): Promise<string> {
             }
             return url.href;
         } catch (e) {
-            throw new Error("File does not contain a valid stream url!")
+            throw new Error("File does not contain a valid stream url!: " + e)
         }
     } else {
         throw new Error("Unable to find a radio station within the file!")
