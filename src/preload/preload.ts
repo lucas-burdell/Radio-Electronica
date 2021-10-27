@@ -1,20 +1,50 @@
+import { Eladio, FileHelper } from "#/exposed_apis";
 import { contextBridge, ipcRenderer } from "electron";
 
-// Expose protected methods that allow the renderer process to use
-// the ipcRenderer without exposing the entire object
-contextBridge.exposeInMainWorld('ipcRenderer', {
-    send: (channel: string, data: any) => {
-        // whitelist channels
-        let validChannels = ['toMain']
-        if (validChannels.includes(channel)) {
-            ipcRenderer.send(channel, data)
-        }
-    },
-    receive: (channel: string, func: (...args: any[]) => void) => {
-        let validChannels = ['fromMain']
-        if (validChannels.includes(channel)) {
-            // Deliberately strip event as it includes `sender`
-            ipcRenderer.on(channel, (event, ...args) => func(...args))
-        }
+function convertClassToObject<T>(theClass: T): T {
+  const originalClass = theClass;
+  const keys = Object.getOwnPropertyNames(Object.getPrototypeOf(originalClass)) as Array<keyof T>;
+  let obj: Partial<T> = {};
+  keys.forEach((key) => {
+    if (key !== 'constructor') {
+      const original = originalClass[key];
+      if (typeof original === 'function') {
+        obj[key] = original.bind(originalClass);
+      } else {
+        obj[key] = original;
+      }
     }
-})
+  });
+  return obj as T;
+}
+
+function expose<T>(name: keyof Eladio, api: T) {
+  const objectified = convertClassToObject(api);
+  contextBridge.exposeInMainWorld(name, objectified);
+}
+
+class FileHelperImpl implements FileHelper {
+  private listener: ((newUrl: string) => void) | undefined;
+
+  constructor() {
+    ipcRenderer.on('plsFileOpened', (_, ...args) => {
+      if (this.listener && args[0]) {
+        this.listener(args[0])
+      }
+    });
+  }
+  public removeListener(listener: (newUrl: string) => void): void {
+    if (this.listener === listener) {
+      this.listener = undefined;
+    }
+  }
+  public openPLSFileDialog(): void {
+    ipcRenderer.send('openPLSDialog');
+
+  }
+  public onNewPLSOpened(listener: (newUrl: string) => void): void {
+    this.listener = listener;
+  }
+}
+
+expose<FileHelper>('fileHelper', new FileHelperImpl());

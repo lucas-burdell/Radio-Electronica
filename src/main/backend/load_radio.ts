@@ -7,8 +7,8 @@ async function downloadListenPlsAsync(url: string) {
         const result = (await axios.get(url)).data;
         return result;
     } catch (e) {
-        throw e;
         console.error(e);
+        throw e;
     }
 }
 
@@ -50,12 +50,27 @@ function getStreamUrlFromFileAsync(filePath: string) {
     });
 }
 
-ipcMain.on('toMain', async (event) => {
-    const result = await dialog.showOpenDialog({ properties: ['openFile'], filters: [{ name: "Playlist", extensions: ['pls'] }] })
+export async function openDialog(): Promise<string | undefined> {
+    const result = await dialog.showOpenDialog({ properties: ['openFile'], filters: [{ name: "Playlist", extensions: ['pls'] }] });
+    if (!result.canceled) {
+        try {
+            const url = await getStreamUrlFromFileAsync(result.filePaths[0]) as string;
+            return url;
+        } catch (e) {
+            console.error(e);
+            return undefined;
+        }
+    } else {
+        return undefined;
+    }
+}
+
+ipcMain.on('openPLSDialog', async (event) => {
     try {
-        const url = await getStreamUrlFromFileAsync(result.filePaths[0]);
-        event.reply('fromMain', url);
+        const result = await openDialog();
+        event.reply('plsFileOpened', result);
     } catch (e) {
-        event.reply('fromMain', new Error(e as string));
+        console.error(e);
+        event.reply('plsFileOpened', undefined);
     }
 })

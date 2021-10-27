@@ -6,6 +6,9 @@ const rootPath = path.resolve(__dirname, "..");
 const config: Configuration = {
     resolve: {
         extensions: [".ts", ".js"],
+        alias: {
+            ['#']: path.resolve(__dirname, 'src/shared/')
+        },
     },
     devtool: "source-map",
     entry: path.resolve(rootPath, "src/preload", "preload.ts"),

@@ -6,7 +6,7 @@
       <div class="centered d-flex justify-center">
         <div class="flex-column justify-center align-center">
           <Radio :source="source" />
-          <v-btn @click="testDialog">Open PLS File</v-btn>
+          <v-btn @click="openDialog">Open PLS File</v-btn>
         </div>
       </div>
     </v-main>
@@ -34,18 +34,12 @@ export default Vue.extend({
     source: "",
   }),
   methods: {
-    testDialog() {
-      window.ipcRenderer.send("toMain");
+    openDialog() {
+      window.fileHelper.openPLSFileDialog();
     },
   },
   created() {
-    window.ipcRenderer.receive("fromMain", (arg) => {
-      if (arg instanceof Error) {
-        console.error("renderer:", arg);
-      } else {
-        this.source = arg;
-      }
-    });
+    window.fileHelper.onNewPLSOpened((src) => (this.source = src));
   },
 });
 </script>

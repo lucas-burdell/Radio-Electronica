@@ -8,6 +8,10 @@ const config = {
   resolve: {
     extensions: [".vue", ".ts", ".js"],
     mainFields: ["main", "module", "browser"],
+    alias: {
+      ['@']: path.resolve(__dirname, 'src/renderer/'),
+      ['#']: path.resolve(__dirname, 'src/shared/')
+    },
   },
   entry: path.resolve(rootPath, "src/renderer", "index.ts"),
   target: "web",

@@ -6,6 +6,10 @@ const rootPath = path.resolve(__dirname, "..");
 const config: Configuration = {
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    alias: {
+      ['!']: path.resolve(__dirname, 'src/main/'),
+      ['#']: path.resolve(__dirname, 'src/shared/')
+    },
   },
   devtool: "source-map",
   entry: path.resolve(rootPath, "src/main", "main.ts"),

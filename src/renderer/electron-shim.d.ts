@@ -1,10 +1,5 @@
-export interface ipcRenderer {
-    send: (channel: string, data?: any) => Promise<void>,
-    receive: (channel: string, func: (...args: any[]) => void) => Promise<void>
-}
+import { Eladio } from "#/exposed_apis";
 
 declare global {
-    interface Window {
-        ipcRenderer: ipcRenderer
-    }
+    interface Window extends Eladio { }
 }
