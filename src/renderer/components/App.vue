@@ -1,15 +1,20 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark> </v-app-bar>
+    <v-app-bar app color="primary" dark>
+      <v-app-bar-nav-icon @click.stop="showDrawer = !showDrawer" />
+      <v-app-bar-title>Eladio</v-app-bar-title>
+    </v-app-bar>
 
-    <v-main>
-      <div class="centered d-flex justify-center">
-        <div class="flex-column justify-center align-center">
-          <Radio :source="source" />
-          <v-btn @click="openDialog">Open PLS File</v-btn>
-        </div>
-      </div>
-    </v-main>
+    <v-main><RadioView /></v-main>
+    <v-navigation-drawer v-model="showDrawer" absolute temporary>
+      <v-list nav dense>
+        <v-list-item-group v-model="group" active-class="text--accent-4">
+          <v-list-item>
+            <v-list-item-title>Settings</v-list-item-title>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-navigation-drawer>
   </v-app>
 </template>
 
@@ -20,26 +25,20 @@
 </style>
 
 <script lang="ts">
-import Radio from "./Radio.vue";
 import Vue from "vue";
+import RadioView from "./RadioView.vue";
 
 export default Vue.extend({
   name: "App",
 
   components: {
-    Radio,
+    RadioView,
   },
 
   data: () => ({
     source: "",
+    showDrawer: false,
+    group: undefined,
   }),
-  methods: {
-    openDialog() {
-      window.fileHelper.openPLSFileDialog();
-    },
-  },
-  created() {
-    window.fileHelper.onNewPLSOpened((src) => (this.source = src));
-  },
 });
 </script>
