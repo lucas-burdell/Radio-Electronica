@@ -1,16 +1,17 @@
 import * as path from "path";
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { VueLoaderPlugin } from 'vue-loader';
+import { Configuration, WebpackPluginInstance } from "webpack";
 
 const rootPath = path.resolve(__dirname, "..");
 
-const config = {
+const config: Configuration & { devServer: any } = {
   resolve: {
-    extensions: [".vue", ".ts", ".js"],
+    extensions: [".vue", ".ts", ".js", ".vue.ts"],
     mainFields: ["main", "module", "browser"],
     alias: {
-      ['@']: path.resolve(__dirname, 'src/renderer/'),
-      ['#']: path.resolve(__dirname, 'src/shared/')
+      ['@']: path.resolve(rootPath, 'src/renderer/'),
+      ['#']: path.resolve(rootPath, 'src/shared/')
     },
   },
   entry: path.resolve(rootPath, "src/renderer", "index.ts"),
@@ -19,10 +20,12 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.(js|ts|ts)$/,
+        test: /\.(js|ts)$/,
         exclude: /node_modules/,
-        options: { appendTsSuffixTo: [/\.vue$/] },
-        loader: 'ts-loader',
+        use: {
+          loader: 'ts-loader',
+          options: { appendTsSuffixTo: [/\.vue$/] }
+        }
       },
       {
         exclude: /node_modules/,
@@ -41,6 +44,9 @@ const config = {
       }
     ],
   },
+  node: {
+    __dirname: false
+  },
   devServer: {
     static: path.join(rootPath, "dist/renderer"),
     devMiddleware: {
@@ -54,7 +60,7 @@ const config = {
     filename: "js/[name].js",
     publicPath: "./"
   },
-  plugins: [new HtmlWebpackPlugin({ template: 'src/renderer/index.ejs' }), new VueLoaderPlugin()],
+  plugins: [new HtmlWebpackPlugin({ template: 'src/renderer/index.ejs' }), new VueLoaderPlugin() as WebpackPluginInstance],
 };
 
 export default config;

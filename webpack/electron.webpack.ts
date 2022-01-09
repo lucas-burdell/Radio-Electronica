@@ -7,8 +7,8 @@ const config: Configuration = {
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
     alias: {
-      ['!']: path.resolve(__dirname, 'src/main/'),
-      ['#']: path.resolve(__dirname, 'src/shared/')
+      ['!']: path.resolve(rootPath, 'src/main/'),
+      ['#']: path.resolve(rootPath, 'src/shared/')
     },
   },
   devtool: "source-map",

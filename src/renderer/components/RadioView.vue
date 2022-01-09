@@ -6,8 +6,8 @@
 </template>
 
 <script lang="ts">
-import Radio from "./Radio.vue";
-import RadioList from "./RadioList.vue";
+import Radio from "@/components/Radio.vue";
+import RadioList from "@/components/RadioList.vue";
 import Vue from "vue";
 export default Vue.extend({
   components: { Radio, RadioList },
