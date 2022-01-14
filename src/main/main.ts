@@ -2,6 +2,7 @@ import { app, BrowserWindow } from "electron";
 import * as path from "path";
 import * as url from "url";
 import './backend/load_radio';
+import './backend/radio_persistance';
 
 let mainWindow: Electron.BrowserWindow | null;
 

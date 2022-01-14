@@ -4,17 +4,7 @@
       <v-app-bar-nav-icon @click.stop="showDrawer = !showDrawer" />
       <v-app-bar-title>Eladio</v-app-bar-title>
     </v-app-bar>
-
     <v-main><RadioView /></v-main>
-    <v-navigation-drawer v-model="showDrawer" absolute temporary>
-      <v-list nav dense>
-        <v-list-item-group v-model="group" active-class="text--accent-4">
-          <v-list-item>
-            <v-list-item-title>Settings</v-list-item-title>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-    </v-navigation-drawer>
   </v-app>
 </template>
 

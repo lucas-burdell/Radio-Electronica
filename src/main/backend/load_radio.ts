@@ -1,6 +1,7 @@
 import fs from "fs";
 import { ipcMain, dialog } from "electron";
 import axios from "axios";
+import { AddRadio, ReadRadiosFromUserData } from "./radio_persistance";
 
 async function downloadListenPlsAsync(url: string) {
     try {
@@ -50,12 +51,12 @@ function getStreamUrlFromFileAsync(filePath: string) {
     });
 }
 
-export async function openDialog(): Promise<string | undefined> {
+export async function openDialog(): Promise<{ url: string, name: string } | undefined> {
     const result = await dialog.showOpenDialog({ properties: ['openFile'], filters: [{ name: "Playlist", extensions: ['pls'] }] });
     if (!result.canceled) {
         try {
             const url = await getStreamUrlFromFileAsync(result.filePaths[0]) as string;
-            return url;
+            return { url, name: result.filePaths[0] };
         } catch (e) {
             console.error(e);
             return undefined;
@@ -68,9 +69,13 @@ export async function openDialog(): Promise<string | undefined> {
 ipcMain.on('openPLSDialog', async (event) => {
     try {
         const result = await openDialog();
-        event.reply('plsFileOpened', result);
+        if (result) {
+            await AddRadio(result.url, result.name);
+        }
+        const radios = await ReadRadiosFromUserData();
+        event.reply('loadedRadios', radios);
     } catch (e) {
         console.error(e);
-        event.reply('plsFileOpened', undefined);
+        // event.reply('plsFileOpened', undefined);
     }
 })

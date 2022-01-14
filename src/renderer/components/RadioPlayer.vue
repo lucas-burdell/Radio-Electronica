@@ -1,6 +1,7 @@
 <template>
   <div class="big">
-    <v-btn block @click="togglePlay" v-if="!playing" color="primary" :disabled="!source"
+    <h2>{{ radio && radio.name }}</h2>
+    <v-btn block @click="togglePlay" v-if="!playing" color="primary" :disabled="!radio"
       >Play</v-btn
     >
     <v-btn block @click="togglePlay" v-else color="secondary">Stop</v-btn>
@@ -16,10 +17,11 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { Radio } from "#/SharedTypes";
+import Vue, { PropType } from "vue";
 export default Vue.extend({
   props: {
-    source: { type: String, required: false },
+    radio: { type: Object as PropType<Radio>, required: false },
   },
   data: () => ({
     playing: false,
@@ -33,7 +35,7 @@ export default Vue.extend({
   methods: {
     togglePlay() {
       if (!this.playing) {
-        this.audio.src = this.source;
+        this.audio.src = this.radio.url;
         this.audio.play();
         this.playing = true;
       } else {
@@ -45,6 +47,10 @@ export default Vue.extend({
   watch: {
     volume() {
       this.audio.volume = Number((this.volume / 100).toFixed(2));
+    },
+    radio() {
+      this.audio.pause();
+      this.playing = false;
     },
   },
 });

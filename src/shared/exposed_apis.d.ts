@@ -8,6 +8,8 @@ export interface FileHelper {
 
 export interface RadioService {
     GetList(): Promise<Radio[]>
+    addListener(listener: (radios: Radio[]) => void): void;
+    removeListener(listener: (radios: Radio[]) => void): void;
 }
 
 export interface Eladio {
